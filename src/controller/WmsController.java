@@ -1,4 +1,1 @@
-package controller;
-
-public class WmsController {
-}
+//TODO

@@ -1,4 +1,4 @@
-package Test;
+package test;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ class InventoryItemTest {
 
     @BeforeEach
     void setUp() {
-        inventoryItem = new InventoryItem(1, "Hammer", ItemCategory.HAND_TOOLS, 50, 20, 101);
+        inventoryItem = new InventoryItem(1, "Hubble Torque Key", ItemCategory.HAND_TOOLS, 50, 20, 101);
     }
 
     @Test
@@ -22,7 +22,7 @@ class InventoryItemTest {
 
     @Test
     void getItemName() {
-        assertEquals("Hammer", inventoryItem.getItemName());
+        assertEquals("Hubble Torque Key", inventoryItem.getItemName());
     }
 
     @Test
@@ -63,14 +63,14 @@ class InventoryItemTest {
 
     @Test
     void addStock() {
-        boolean result = inventoryItem.addStock(10, "Restocking");
+        boolean result = inventoryItem.addStock(10, "ISS resupply");
         assertTrue(result);
         assertEquals(60, inventoryItem.getItemQuantity());
     }
 
     @Test
     void removeStock() {
-        boolean result = inventoryItem.removeStock(10, "Sale");
+        boolean result = inventoryItem.removeStock(10, "Orion assembly");
         assertTrue(result);
         assertEquals(40, inventoryItem.getItemQuantity());
     }
@@ -78,7 +78,7 @@ class InventoryItemTest {
     @Test
     void isLowStock() {
         assertFalse(inventoryItem.isLowStock());
-        inventoryItem.removeStock(35, "Test");
+        inventoryItem.removeStock(35, "test");
         assertTrue(inventoryItem.isLowStock());
     }
 }

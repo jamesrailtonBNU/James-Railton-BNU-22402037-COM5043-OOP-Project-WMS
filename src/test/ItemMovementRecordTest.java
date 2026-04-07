@@ -1,10 +1,9 @@
-package Test;
+package test;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import model.ItemMovementRecord;
 import model.MovementType;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ItemMovementRecordTest {
@@ -13,7 +12,7 @@ class ItemMovementRecordTest {
 
     @BeforeEach
     void setUp() {
-        movementRecord = new ItemMovementRecord(MovementType.ADD, 10, "Restocking");
+        movementRecord = new ItemMovementRecord(MovementType.ADD, 10, "ISS resupply");
     }
 
     @Test
@@ -28,7 +27,7 @@ class ItemMovementRecordTest {
 
     @Test
     void getNote() {
-        assertEquals("Restocking", movementRecord.getNote());
+        assertEquals("ISS resupply", movementRecord.getNote());
     }
 
     @Test

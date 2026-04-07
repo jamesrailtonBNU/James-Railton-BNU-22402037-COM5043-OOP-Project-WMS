@@ -17,4 +17,18 @@ public class Supplier {
         this.itemType = itemType;
         this.orderHistory = new ArrayList<>();
     }
+
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getContactInfo() { return contactInfo; }
+    public String getItemType() { return itemType; }
+    public List<String> getOrderHistory() { return orderHistory; }
+
+    public void setName(String name) { this.name = name; }
+    public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
+    public void setItemType(String itemType) { this.itemType = itemType; }
+
+    public void addOrderHistory(String historyEntry) {
+        orderHistory.add(historyEntry);
+    }
 }
