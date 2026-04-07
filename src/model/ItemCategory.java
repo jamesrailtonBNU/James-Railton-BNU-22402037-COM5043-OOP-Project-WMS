@@ -4,7 +4,7 @@ public enum ItemCategory {
     HEAVY_EQUIPMENT,
     POWER_TOOLS,
     HAND_TOOLS,
-    PPE_AND_SAFETY,
+    PPE,
     CONSUMABLES,
     SPARE_PARTS,
     PACKAGING,
