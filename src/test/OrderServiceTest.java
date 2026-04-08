@@ -9,7 +9,6 @@ import service.OrderService;
 import service.SupplierService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderServiceTest {
@@ -20,7 +19,7 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         orders = new ArrayList<>();
-        orderService = new OrbitService(orders, new AtomicInteger(1), new SupplierService(), new InventoryService());
+        orderService = new OrbitService(orders, 1, new SupplierService(), new InventoryService());
     }
 
     @Test
@@ -93,8 +92,8 @@ class OrderServiceTest {
         private boolean beforeCalled;
         private boolean afterCalled;
 
-        OrbitService(List<Order> orders, AtomicInteger orderIdCounter, SupplierService supplierService, InventoryService inventoryService) {
-            super(orders, orderIdCounter, supplierService, inventoryService);
+        OrbitService(List<Order> orders, int nextOrderId, SupplierService supplierService, InventoryService inventoryService) {
+            super(orders, nextOrderId, supplierService, inventoryService);
         }
 
         int nextOrderIdPublic() {

@@ -6,12 +6,14 @@ import model.OrderStatus;
 import model.PurchaseOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.FinanceService;
 import service.InventoryService;
 import service.PurchaseOrderService;
 import service.SupplierService;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PurchaseOrderServiceTest {
@@ -19,6 +21,7 @@ class PurchaseOrderServiceTest {
     private List<Order> orders;
     private SupplierService supplierService;
     private InventoryService inventoryService;
+    private FinanceService financeService;
     private ExposedPurchaseOrderService purchaseOrderService;
 
     @BeforeEach
@@ -27,12 +30,14 @@ class PurchaseOrderServiceTest {
         supplierService = new SupplierService();
         supplierService.addSupplier("Arianespace Hangar Tools", "artemis2@nasa.test", "JWST Payloads");
         inventoryService = new InventoryService();
+        financeService = new FinanceService();
         inventoryService.addItem("Perseverance Drill", ItemCategory.POWER_TOOLS, 5, 1, 1);
         purchaseOrderService = new ExposedPurchaseOrderService(
                 orders,
-                new AtomicInteger(1),
+                1,
                 supplierService,
-                inventoryService);
+                inventoryService,
+                financeService);
     }
 
     @Test
@@ -43,6 +48,7 @@ class PurchaseOrderServiceTest {
         assertEquals(1, orders.size());
         assertTrue(orders.get(0) instanceof PurchaseOrder);
         assertEquals(1, supplierService.getSupplierOrderHistory(1).size());
+        assertEquals(0, financeService.getAccountBalance().compareTo(BigDecimal.valueOf(-399.96)));
     }
 
     @Test
@@ -62,6 +68,7 @@ class PurchaseOrderServiceTest {
         assertTrue(purchaseOrderService.cancelOrder(orderId));
         assertEquals(OrderStatus.CANCELLED, orders.get(0).getStatus());
         assertEquals(0, orders.get(0).getQuantity());
+        assertEquals(0, financeService.getAccountBalance().compareTo(BigDecimal.ZERO));
     }
 
     @Test
@@ -103,8 +110,8 @@ class PurchaseOrderServiceTest {
 
     private static class ExposedPurchaseOrderService extends PurchaseOrderService {
 
-        ExposedPurchaseOrderService(List<Order> orders, AtomicInteger orderIdCounter, SupplierService supplierService, InventoryService inventoryService) {
-            super(orders, orderIdCounter, supplierService, inventoryService);
+        ExposedPurchaseOrderService(List<Order> orders, int nextOrderId, SupplierService supplierService, InventoryService inventoryService, FinanceService financeService) {
+            super(orders, nextOrderId, supplierService, inventoryService, financeService);
         }
 
         boolean createOrderPublic(Order order) {

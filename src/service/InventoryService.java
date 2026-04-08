@@ -1,5 +1,5 @@
 package service;
-
+// This is used for managing inventory items, including adding new items, updating stock levels, and retrieving item information.
 import model.InventoryItem;
 import model.ItemCategory;
 import java.util.ArrayList;
@@ -32,6 +32,16 @@ public class InventoryService {
     public boolean removeStock(int itemId, int quantity, String note) {
         InventoryItem item = getItemById(itemId);
         return item != null && item.removeStock(quantity, note);
+    }
+
+    public boolean deleteItem(int itemId) {
+        InventoryItem item = getItemById(itemId);
+
+        if (item == null) {
+            return false;
+        }
+
+        return stockItems.remove(item);
     }
 
     public List<InventoryItem> getAllItems() {

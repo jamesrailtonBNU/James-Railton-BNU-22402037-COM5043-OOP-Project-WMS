@@ -1,4 +1,6 @@
 package model;
+// This is used for the InventoryItem class to represent an item in the inventory, including its details and stock movement history.
+
 
 import java.util.ArrayList;
 import java.util.Collections;

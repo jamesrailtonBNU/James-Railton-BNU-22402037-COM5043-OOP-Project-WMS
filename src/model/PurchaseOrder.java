@@ -1,4 +1,5 @@
 package model;
+// This is used for both purchase orders and sales orders, as they share common attributes and behaviors.
 
 public class PurchaseOrder extends Order {
 

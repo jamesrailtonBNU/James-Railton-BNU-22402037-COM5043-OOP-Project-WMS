@@ -1,19 +1,29 @@
 package service;
+// this is used for managing purchase orders, including creating new purchase orders, changing their status, and cancelling them.
+
 
 import model.Order;
 import model.OrderStatus;
 import model.PurchaseOrder;
 import model.InventoryItem;
+import model.TransactionType;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class PurchaseOrderService extends OrderService {
 
-    public PurchaseOrderService(List<Order> orders, AtomicInteger orderIdCounter, SupplierService supplierService, InventoryService inventoryService) {
-        super(orders, orderIdCounter, supplierService, inventoryService);
+    public PurchaseOrderService(List<Order> orders, int nextOrderId, SupplierService supplierService, InventoryService inventoryService) {
+        this(orders, nextOrderId, supplierService, inventoryService, new FinanceService());
+    }
+
+    public PurchaseOrderService(List<Order> orders, int nextOrderId, SupplierService supplierService, InventoryService inventoryService, FinanceService financeService) {
+        super(orders, nextOrderId, supplierService, inventoryService, financeService);
     }
 
     public int addPurchaseOrder(int itemId, int quantity, double itemPrice, int supplierId) {
+        return addPurchaseOrder(nextOrderId(), itemId, quantity, itemPrice, supplierId);
+    }
+
+    int addPurchaseOrder(int orderId, int itemId, int quantity, double itemPrice, int supplierId) {
         InventoryItem item = inventoryService.getItemById(itemId);
 
         if (item == null || quantity <= 0 || itemPrice < 0 || supplierId <= 0 || !supplierService.supplierExists(supplierId)) {
@@ -24,9 +34,13 @@ public class PurchaseOrderService extends OrderService {
             return -1;
         }
 
-        PurchaseOrder order = new PurchaseOrder(nextOrderId(), item.getItemId(), item.getItemName(), quantity, itemPrice, supplierId);
+        PurchaseOrder order = new PurchaseOrder(orderId, item.getItemId(), item.getItemName(), quantity, itemPrice, supplierId);
 
         if (!createOrder(order)) {
+            return -1;
+        }
+
+        if (!recordOrderTransaction(order, TransactionType.EXPENSE)) {
             return -1;
         }
 
@@ -84,7 +98,15 @@ public class PurchaseOrderService extends OrderService {
     protected boolean cancelSpecificOrder(Order order) {
         PurchaseOrder purchaseOrder = (PurchaseOrder) order;
 
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            return false;
+        }
+
         if (order.isInventoryUpdated()) {
+            return false;
+        }
+
+        if (!reverseOrderTransaction(order)) {
             return false;
         }
 

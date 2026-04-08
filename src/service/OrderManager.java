@@ -1,4 +1,5 @@
 package service;
+// This is used for managing both customer and purchase orders, providing a unified interface for order operations.
 
 import model.CustomerOrder;
 import model.Order;
@@ -6,27 +7,30 @@ import model.OrderStatus;
 import model.PurchaseOrder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderManager {
     private final List<Order> allOrders;
-    private final AtomicInteger orderIdCounter;
     private final CustomerOrderService customerOrderService;
     private final PurchaseOrderService purchaseOrderService;
+    private int nextOrderId;
 
     public OrderManager(SupplierService supplierService, InventoryService inventoryService) {
+        this(supplierService, inventoryService, new FinanceService());
+    }
+
+    public OrderManager(SupplierService supplierService, InventoryService inventoryService, FinanceService financeService) {
         this.allOrders = new ArrayList<>();
-        this.orderIdCounter = new AtomicInteger(1);
-        this.customerOrderService = new CustomerOrderService(allOrders, orderIdCounter, supplierService, inventoryService);
-        this.purchaseOrderService = new PurchaseOrderService(allOrders, orderIdCounter, supplierService, inventoryService);
+        this.nextOrderId = 1;
+        this.customerOrderService = new CustomerOrderService(allOrders, 1, supplierService, inventoryService, financeService);
+        this.purchaseOrderService = new PurchaseOrderService(allOrders, 1, supplierService, inventoryService, financeService);
     }
 
     public int addCustomerOrder(int itemId, int quantity, double itemPrice) {
-        return customerOrderService.addCustomerOrder(itemId, quantity, itemPrice);
+        return customerOrderService.addCustomerOrder(nextOrderId++, itemId, quantity, itemPrice);
     }
 
     public int addPurchaseOrder(int itemId, int quantity, double itemPrice, int supplierId) {
-        return purchaseOrderService.addPurchaseOrder(itemId, quantity, itemPrice, supplierId);
+        return purchaseOrderService.addPurchaseOrder(nextOrderId++, itemId, quantity, itemPrice, supplierId);
     }
 
     public List<Order> getOrders() {
@@ -64,6 +68,20 @@ public class OrderManager {
 
         if (order instanceof PurchaseOrder) {
             return purchaseOrderService.cancelOrder(orderId);
+        }
+
+        return false;
+    }
+
+    public boolean hasActiveOrdersForItem(int itemId) {
+        if (itemId <= 0) {
+            return false;
+        }
+
+        for (Order order : allOrders) {
+            if (order.getItemId() == itemId && order.getStatus() != OrderStatus.CANCELLED) {
+                return true;
+            }
         }
 
         return false;

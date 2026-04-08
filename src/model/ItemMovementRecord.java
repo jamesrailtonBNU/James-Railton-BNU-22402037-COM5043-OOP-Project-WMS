@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+// This class represents a record of an item movement, such as adding or removing stock. It captures the type of movement, quantity, any notes, and the timestamp of the movement.
 
 public class ItemMovementRecord {
 

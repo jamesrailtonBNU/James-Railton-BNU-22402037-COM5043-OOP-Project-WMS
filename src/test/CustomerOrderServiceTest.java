@@ -7,11 +7,13 @@ import model.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.CustomerOrderService;
+import service.FinanceService;
 import service.InventoryService;
 import service.SupplierService;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,18 +21,21 @@ class CustomerOrderServiceTest {
 
     private List<Order> orders;
     private InventoryService inventoryService;
+    private FinanceService financeService;
     private ExposedCustomerOrderService customerOrderService;
 
     @BeforeEach
     void setUp() {
         orders = new ArrayList<>();
         inventoryService = new InventoryService();
+        financeService = new FinanceService();
         inventoryService.addItem("Orion Tape", ItemCategory.CONSUMABLES, 10, 2, 1);
         customerOrderService = new ExposedCustomerOrderService(
                 orders,
-                new AtomicInteger(1),
+                1,
                 new SupplierService(),
-                inventoryService);
+                inventoryService,
+                financeService);
     }
 
     @Test
@@ -42,6 +47,7 @@ class CustomerOrderServiceTest {
         assertTrue(orders.get(0) instanceof CustomerOrder);
         assertEquals(7, inventoryService.getItemById(1).getItemQuantity());
         assertTrue(orders.get(0).isInventoryUpdated());
+        assertEquals(0, financeService.getAccountBalance().compareTo(BigDecimal.valueOf(13.5)));
     }
 
     @Test
@@ -60,6 +66,7 @@ class CustomerOrderServiceTest {
         assertEquals(OrderStatus.CANCELLED, orders.get(0).getStatus());
         assertEquals(10, inventoryService.getItemById(1).getItemQuantity());
         assertFalse(orders.get(0).isInventoryUpdated());
+        assertEquals(0, financeService.getAccountBalance().compareTo(BigDecimal.ZERO));
     }
 
     @Test
@@ -84,8 +91,8 @@ class CustomerOrderServiceTest {
 
     private static class ExposedCustomerOrderService extends CustomerOrderService {
 
-        ExposedCustomerOrderService(List<Order> orders, AtomicInteger orderIdCounter, SupplierService supplierService, InventoryService inventoryService) {
-            super(orders, orderIdCounter, supplierService, inventoryService);
+        ExposedCustomerOrderService(List<Order> orders, int nextOrderId, SupplierService supplierService, InventoryService inventoryService, FinanceService financeService) {
+            super(orders, nextOrderId, supplierService, inventoryService, financeService);
         }
 
         boolean createOrderPublic(Order order) {

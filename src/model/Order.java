@@ -1,4 +1,5 @@
 package model;
+// This is used for both purchase and sales orders, as they share common attributes and behaviors.
 
 public abstract class Order {
     private final int orderId;

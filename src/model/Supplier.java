@@ -1,4 +1,5 @@
 package model;
+// this is used for suppliers that provide items to the warehouse. It includes their contact information, the type of items they supply, and a history of orders placed with them.
 
 import java.util.ArrayList;
 import java.util.List;

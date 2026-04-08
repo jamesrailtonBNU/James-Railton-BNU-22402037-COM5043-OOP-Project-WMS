@@ -4,6 +4,8 @@ import model.Supplier;
 import java.util.ArrayList;
 import java.util.List;
 
+// this is used for managing suppliers, including adding, updating, deleting, and retrieving supplier information. It also allows for tracking order history for each supplier.
+
 public class SupplierService {
     private final List<Supplier> suppliers;
     private int idCounter = 1;

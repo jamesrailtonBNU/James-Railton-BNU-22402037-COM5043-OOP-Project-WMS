@@ -45,6 +45,16 @@ class InventoryServiceTest {
     }
 
     @Test
+    void deleteItem() {
+        InventoryItem item = inventoryService.addItem("Juno Filter", ItemCategory.SPARE_PARTS, 4, 1, 111);
+
+        assertTrue(inventoryService.deleteItem(item.getItemId()));
+        assertTrue(inventoryService.getAllItems().isEmpty());
+        assertNull(inventoryService.getItemById(item.getItemId()));
+        assertFalse(inventoryService.deleteItem(item.getItemId()));
+    }
+
+    @Test
     void getAllItems() {
         inventoryService.addItem("Ariane Rivet Drill", ItemCategory.POWER_TOOLS, 2, 1, 400);
         List<InventoryItem> allItems = inventoryService.getAllItems();
